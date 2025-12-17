@@ -1,2 +1,0 @@
-# tripat.github.io
-tripat
