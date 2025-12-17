@@ -329,7 +329,7 @@
 <body>
   <div class="container">
     <h1>🚀 Trip Atma Zamanı!</h1>
-    <p class="subtitle">Birisi sana trip atıyorsa, bunu hemen öğren! Aşağıdaki formu doldurarak trip atmak istediğin kişiyi ve sebebini belirt, ardından linkini paylaş!</p>
+    <p class="subtitle">Birisi sana trip atıyorsa, bunu hemen öğren! Aşağıdaki formu doldurarak kendi isminizi, trip atmak istediğiniz kişinin adını ve sebebini belirtin, ardından linkini paylaşın!</p>
     
     <div class="step-indicator">
       <div class="step active" id="step1-indicator">1</div>
@@ -337,11 +337,15 @@
       <div class="step" id="step3-indicator">3</div>
     </div>
 
-    <!-- Adım 1: Kişi Seçimi -->
+    <!-- Adım 1: İsimler -->
     <div id="step1">
       <div class="form-group">
-        <label for="person">Trip atacağınız kişiyi yazın:</label>
-        <input type="text" id="person" placeholder="Örn: Ahmet, Ayşe, Mehmet..." autocomplete="off">
+        <label for="yourName">Kendi isminizi yazın:</label>
+        <input type="text" id="yourName" placeholder="Örn: Ahmet, Ayşe, Mehmet..." autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="person">Trip atacağınız kişinin adını yazın:</label>
+        <input type="text" id="person" placeholder="Örn: Zeynep, Can, Elif..." autocomplete="off">
       </div>
       <div class="button-group">
         <button class="btn-primary" onclick="nextStep()">Devam Et →</button>
@@ -382,7 +386,12 @@
       <div class="trip-message-container">
         <span class="emoji-large">😤</span>
         <h2>Sana Trip Atıyor!</h2>
-        <div class="trip-person" id="tripPersonName"></div>
+        <div class="trip-reason" style="margin-bottom: 20px;">
+          <div style="font-size: 1.3em; line-height: 1.8; text-align: center;">
+            <strong id="tripFromName" style="color: #667eea;"></strong> kişisi, 
+            <strong id="tripToName" style="color: #e74c3c;"></strong> kişisine trip atıyor!
+          </div>
+        </div>
         <div class="trip-reason">
           <span class="trip-reason-label">Trip Sebebi:</span>
           <div id="tripReasonText"></div>
@@ -395,6 +404,7 @@
   </div>
 
   <script>
+    let yourName = '';
     let personName = '';
     let reason = '';
     let shortLink = '';
@@ -413,12 +423,25 @@
       }
     });
 
-    // Adım 1: Kişi adı kontrolü ve sonraki adıma geçiş
+    // Adım 1: İsim kontrolü ve sonraki adıma geçiş
     function nextStep() {
+      yourName = document.getElementById('yourName').value.trim();
       personName = document.getElementById('person').value.trim();
       
+      if (!yourName) {
+        alert("⚠️ Lütfen kendi isminizi girin.");
+        document.getElementById('yourName').focus();
+        return;
+      }
+
+      if (yourName.length < 2) {
+        alert("⚠️ Lütfen en az 2 karakter uzunluğunda bir isim girin.");
+        document.getElementById('yourName').focus();
+        return;
+      }
+
       if (!personName) {
-        alert("⚠️ Lütfen bir kişi adı girin.");
+        alert("⚠️ Lütfen trip atacağınız kişinin adını girin.");
         document.getElementById('person').focus();
         return;
       }
@@ -455,9 +478,9 @@
       document.getElementById('step2').classList.add('hidden');
       document.getElementById('step1').classList.remove('hidden');
       
-      // Input'a odaklan
+      // İlk input'a odaklan
       setTimeout(() => {
-        document.getElementById('person').focus();
+        document.getElementById('yourName').focus();
       }, 100);
     }
 
@@ -478,7 +501,7 @@
       }
 
       // Kısa link oluştur
-      shortLink = generateShortLink(personName, reason);
+      shortLink = generateShortLink(yourName, personName, reason);
 
       // Adım göstergelerini güncelle
       document.getElementById('step2-indicator').classList.remove('active');
@@ -496,9 +519,9 @@
     }
 
     // Kısa link oluşturma fonksiyonu
-    function generateShortLink(person, reason) {
-      // Person ve reason bilgilerini birleştirip Base64 ile encode et
-      const data = `${person}|${reason}`;
+    function generateShortLink(fromName, toName, reason) {
+      // Kullanıcı adı, trip atılan kişi ve reason bilgilerini birleştirip Base64 ile encode et
+      const data = `${fromName}|${toName}|${reason}`;
       
       // Mevcut sayfanın base URL'ini al (query string olmadan)
       const baseUrl = window.location.href.split('?')[0];
@@ -558,10 +581,12 @@
 
     // Formu sıfırla
     function resetForm() {
+      yourName = '';
       personName = '';
       reason = '';
       shortLink = '';
       
+      document.getElementById('yourName').value = '';
       document.getElementById('person').value = '';
       document.getElementById('reason').value = '';
       charCount.textContent = '0';
@@ -580,11 +605,18 @@
       
       // İlk input'a odaklan
       setTimeout(() => {
-        document.getElementById('person').focus();
+        document.getElementById('yourName').focus();
       }, 100);
     }
 
     // Enter tuşu ile form gönderimi
+    document.getElementById('yourName').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('person').focus();
+      }
+    });
+
     document.getElementById('person').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -607,7 +639,8 @@
     // URL parametrelerinden trip bilgisini oku ve göster
     function checkTripMessage() {
       const urlParams = new URLSearchParams(window.location.search);
-      let decodedPerson = '';
+      let decodedFromName = '';
+      let decodedToName = '';
       let decodedReason = '';
       
       // Önce yeni kısa link formatını kontrol et (?t=...)
@@ -626,8 +659,15 @@
           const decoded = decodeURIComponent(atob(padded));
           const parts = decoded.split('|');
           
-          if (parts.length === 2) {
-            decodedPerson = parts[0];
+          if (parts.length === 3) {
+            // Yeni format: fromName|toName|reason
+            decodedFromName = parts[0];
+            decodedToName = parts[1];
+            decodedReason = parts[2];
+          } else if (parts.length === 2) {
+            // Eski format desteği (geriye dönük uyumluluk)
+            decodedFromName = parts[0];
+            decodedToName = parts[0]; // Eski linklerde sadece bir isim vardı
             decodedReason = parts[1];
           }
         } catch (e) {
@@ -641,14 +681,15 @@
         const reasonParam = urlParams.get('reason');
         
         if (personParam && reasonParam) {
-          decodedPerson = decodeURIComponent(personParam);
+          decodedFromName = decodeURIComponent(personParam);
+          decodedToName = decodeURIComponent(personParam);
           decodedReason = decodeURIComponent(reasonParam);
         } else {
           return false;
         }
       }
       
-      if (decodedPerson && decodedReason) {
+      if (decodedFromName && decodedToName && decodedReason) {
         // Tüm form elemanlarını gizle
         document.getElementById('step1').classList.add('hidden');
         document.getElementById('step2').classList.add('hidden');
@@ -658,12 +699,13 @@
         document.querySelector('h1').classList.add('hidden');
         
         // Trip mesajını göster
-        document.getElementById('tripPersonName').textContent = decodedPerson;
+        document.getElementById('tripFromName').textContent = decodedFromName;
+        document.getElementById('tripToName').textContent = decodedToName;
         document.getElementById('tripReasonText').textContent = decodedReason;
         document.getElementById('tripMessage').classList.remove('hidden');
         
         // Sayfa başlığını güncelle
-        document.title = `${decodedPerson} sana trip atıyor!`;
+        document.title = `${decodedFromName} ${decodedToName}'e trip atıyor!`;
         
         return true;
       }
@@ -676,7 +718,7 @@
       // Önce trip mesajı var mı kontrol et
       if (!checkTripMessage()) {
         // Trip mesajı yoksa normal formu göster
-        document.getElementById('person').focus();
+        document.getElementById('yourName').focus();
       }
     });
   </script>
