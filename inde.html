@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Atma Zamanı!</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 600px;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+      font-size: 1em;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1em;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background-color: #f9f9f9;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.85em;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background-color: #f5f5f5;
+      color: #666;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e0e0e0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .result-container {
+      text-align: center;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .result-container h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 2em;
+    }
+
+    .result-container p {
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      font-size: 1.1em;
+    }
+
+    .link-box {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 2px dashed #667eea;
+    }
+
+    .link-box a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 1.2em;
+      font-weight: 600;
+      word-break: break-all;
+      display: inline-block;
+      transition: color 0.3s ease;
+    }
+
+    .link-box a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .copy-btn {
+      margin-top: 15px;
+      background-color: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
+    .copy-btn:hover {
+      background-color: #5568d3;
+    }
+
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+
+    .step {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      background-color: #e0e0e0;
+      color: #999;
+      transition: all 0.3s ease;
+    }
+
+    .step.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .step.completed {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .trip-message-container {
+      text-align: center;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    .trip-message-container h2 {
+      color: #e74c3c;
+      margin-bottom: 20px;
+      font-size: 2.5em;
+      font-weight: 700;
+    }
+
+    .trip-person {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+      font-size: 1.5em;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(238, 90, 111, 0.4);
+    }
+
+    .trip-reason {
+      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+      padding: 25px;
+      border-radius: 15px;
+      margin: 20px 0;
+      font-size: 1.2em;
+      line-height: 1.8;
+      color: #2d3436;
+      border-left: 5px solid #e74c3c;
+      text-align: left;
+    }
+
+    .trip-reason-label {
+      font-weight: 600;
+      color: #e74c3c;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .emoji-large {
+      font-size: 4em;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Trip Atma Zamanı!</h1>
+    <p class="subtitle">Birisi sana trip atıyorsa, bunu hemen öğren! Aşağıdaki formu doldurarak trip atmak istediğin kişiyi ve sebebini belirt, ardından linkini paylaş!</p>
+    
+    <div class="step-indicator">
+      <div class="step active" id="step1-indicator">1</div>
+      <div class="step" id="step2-indicator">2</div>
+      <div class="step" id="step3-indicator">3</div>
+    </div>
+
+    <!-- Adım 1: Kişi Seçimi -->
+    <div id="step1">
+      <div class="form-group">
+        <label for="person">Trip atacağınız kişiyi yazın:</label>
+        <input type="text" id="person" placeholder="Örn: Ahmet, Ayşe, Mehmet..." autocomplete="off">
+      </div>
+      <div class="button-group">
+        <button class="btn-primary" onclick="nextStep()">Devam Et →</button>
+      </div>
+    </div>
+    
+    <!-- Adım 2: Sebep Yazma -->
+    <div id="step2" class="hidden">
+      <div class="form-group">
+        <label for="reason">Trip sebebinizi yazın:</label>
+        <textarea id="reason" placeholder="Örn: Bugün çok geç kaldı, beni umursamıyor, hep benden bekliyor..." maxlength="500"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/500</div>
+      </div>
+      <div class="button-group">
+        <button class="btn-secondary" onclick="previousStep()">← Geri</button>
+        <button class="btn-primary" onclick="generateLink()">Link Oluştur ✨</button>
+      </div>
+    </div>
+    
+    <!-- Adım 3: Sonuç -->
+    <div id="result" class="hidden">
+      <div class="result-container">
+        <h2>🎉 Trip Mesajınız Hazır!</h2>
+        <p>Tebrikler, trip mesajınızı başarıyla oluşturduk. Aşağıdaki linke tıklayarak veya kopyalayarak trip mesajınızı paylaşabilirsiniz.</p>
+        <div class="link-box">
+          <a id="tripLink" href="#" target="_blank"></a>
+        </div>
+        <button class="copy-btn" onclick="copyLink()">📋 Linki Kopyala</button>
+        <div class="success-message" id="copySuccess">✓ Link panoya kopyalandı!</div>
+        <div class="button-group" style="margin-top: 30px;">
+          <button class="btn-primary" onclick="resetForm()">🔄 Yeni Trip Oluştur</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trip Mesajı Görüntüleme -->
+    <div id="tripMessage" class="hidden">
+      <div class="trip-message-container">
+        <span class="emoji-large">😤</span>
+        <h2>Sana Trip Atıyor!</h2>
+        <div class="trip-person" id="tripPersonName"></div>
+        <div class="trip-reason">
+          <span class="trip-reason-label">Trip Sebebi:</span>
+          <div id="tripReasonText"></div>
+        </div>
+        <div class="button-group" style="margin-top: 30px;">
+          <button class="btn-primary" onclick="goToHome()">🏠 Ana Sayfaya Dön</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let personName = '';
+    let reason = '';
+    let shortLink = '';
+
+    // Karakter sayacı
+    const reasonTextarea = document.getElementById('reason');
+    const charCount = document.getElementById('charCount');
+
+    reasonTextarea.addEventListener('input', function() {
+      const length = this.value.length;
+      charCount.textContent = length;
+      if (length > 450) {
+        charCount.style.color = '#e74c3c';
+      } else {
+        charCount.style.color = '#999';
+      }
+    });
+
+    // Adım 1: Kişi adı kontrolü ve sonraki adıma geçiş
+    function nextStep() {
+      personName = document.getElementById('person').value.trim();
+      
+      if (!personName) {
+        alert("⚠️ Lütfen bir kişi adı girin.");
+        document.getElementById('person').focus();
+        return;
+      }
+
+      if (personName.length < 2) {
+        alert("⚠️ Lütfen en az 2 karakter uzunluğunda bir isim girin.");
+        document.getElementById('person').focus();
+        return;
+      }
+
+      // Adım göstergelerini güncelle
+      document.getElementById('step1-indicator').classList.remove('active');
+      document.getElementById('step1-indicator').classList.add('completed');
+      document.getElementById('step2-indicator').classList.add('active');
+
+      // Adımları değiştir
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+      
+      // Textarea'ya odaklan
+      setTimeout(() => {
+        document.getElementById('reason').focus();
+      }, 100);
+    }
+
+    // Önceki adıma dön
+    function previousStep() {
+      // Adım göstergelerini güncelle
+      document.getElementById('step2-indicator').classList.remove('active');
+      document.getElementById('step1-indicator').classList.remove('completed');
+      document.getElementById('step1-indicator').classList.add('active');
+
+      // Adımları değiştir
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      
+      // Input'a odaklan
+      setTimeout(() => {
+        document.getElementById('person').focus();
+      }, 100);
+    }
+
+    // Link oluşturma fonksiyonu
+    function generateLink() {
+      reason = document.getElementById('reason').value.trim();
+      
+      if (!reason) {
+        alert("⚠️ Lütfen trip sebebinizi yazın.");
+        document.getElementById('reason').focus();
+        return;
+      }
+
+      if (reason.length < 5) {
+        alert("⚠️ Lütfen en az 5 karakter uzunluğunda bir sebep yazın.");
+        document.getElementById('reason').focus();
+        return;
+      }
+
+      // Kısa link oluştur
+      shortLink = generateShortLink(personName, reason);
+
+      // Adım göstergelerini güncelle
+      document.getElementById('step2-indicator').classList.remove('active');
+      document.getElementById('step2-indicator').classList.add('completed');
+      document.getElementById('step3-indicator').classList.add('active');
+
+      // Sonuç ekranını göster
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('result').classList.remove('hidden');
+
+      // Linki ayarla
+      const tripLink = document.getElementById('tripLink');
+      tripLink.href = shortLink;
+      tripLink.innerText = shortLink;
+    }
+
+    // Kısa link oluşturma fonksiyonu
+    function generateShortLink(person, reason) {
+      // Person ve reason bilgilerini birleştirip Base64 ile encode et
+      const data = `${person}|${reason}`;
+      
+      // Mevcut sayfanın base URL'ini al (query string olmadan)
+      const baseUrl = window.location.href.split('?')[0];
+      
+      // UTF-8 karakterleri için önce encodeURIComponent kullan, sonra Base64
+      const encoded = btoa(encodeURIComponent(data))
+        .replace(/\+/g, '-')  // URL-safe karakterler
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');   // Padding'i kaldır
+      
+      return `${baseUrl}?t=${encoded}`;
+    }
+
+    // Linki kopyalama fonksiyonu
+    function copyLink() {
+      const linkText = document.getElementById('tripLink').innerText;
+      
+      // Modern clipboard API kullan
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(linkText).then(() => {
+          showCopySuccess();
+        }).catch(() => {
+          fallbackCopy(linkText);
+        });
+      } else {
+        fallbackCopy(linkText);
+      }
+    }
+
+    // Fallback kopyalama yöntemi
+    function fallbackCopy(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        showCopySuccess();
+      } catch (err) {
+        alert('Kopyalama başarısız oldu. Lütfen linki manuel olarak kopyalayın.');
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    // Kopyalama başarı mesajı
+    function showCopySuccess() {
+      const successMsg = document.getElementById('copySuccess');
+      successMsg.classList.add('show');
+      setTimeout(() => {
+        successMsg.classList.remove('show');
+      }, 3000);
+    }
+
+    // Formu sıfırla
+    function resetForm() {
+      personName = '';
+      reason = '';
+      shortLink = '';
+      
+      document.getElementById('person').value = '';
+      document.getElementById('reason').value = '';
+      charCount.textContent = '0';
+      charCount.style.color = '#999';
+      
+      // Adım göstergelerini sıfırla
+      document.getElementById('step1-indicator').classList.remove('completed');
+      document.getElementById('step1-indicator').classList.add('active');
+      document.getElementById('step2-indicator').classList.remove('active', 'completed');
+      document.getElementById('step3-indicator').classList.remove('active', 'completed');
+      
+      // Adımları sıfırla
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      
+      // İlk input'a odaklan
+      setTimeout(() => {
+        document.getElementById('person').focus();
+      }, 100);
+    }
+
+    // Enter tuşu ile form gönderimi
+    document.getElementById('person').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        nextStep();
+      }
+    });
+
+    document.getElementById('reason').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        e.preventDefault();
+        generateLink();
+      }
+    });
+
+    // Ana sayfaya dön fonksiyonu
+    function goToHome() {
+      window.location.href = window.location.pathname;
+    }
+
+    // URL parametrelerinden trip bilgisini oku ve göster
+    function checkTripMessage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let decodedPerson = '';
+      let decodedReason = '';
+      
+      // Önce yeni kısa link formatını kontrol et (?t=...)
+      const tripParam = urlParams.get('t');
+      if (tripParam) {
+        try {
+          // Base64 decode ve URL-safe karakterleri geri çevir
+          const base64 = tripParam
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+          
+          // Padding ekle (gerekirse)
+          const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
+          
+          // Decode et
+          const decoded = decodeURIComponent(atob(padded));
+          const parts = decoded.split('|');
+          
+          if (parts.length === 2) {
+            decodedPerson = parts[0];
+            decodedReason = parts[1];
+          }
+        } catch (e) {
+          console.error('Link decode hatası:', e);
+          return false;
+        }
+      } 
+      // Eski format desteği (geriye dönük uyumluluk için)
+      else {
+        const personParam = urlParams.get('person');
+        const reasonParam = urlParams.get('reason');
+        
+        if (personParam && reasonParam) {
+          decodedPerson = decodeURIComponent(personParam);
+          decodedReason = decodeURIComponent(reasonParam);
+        } else {
+          return false;
+        }
+      }
+      
+      if (decodedPerson && decodedReason) {
+        // Tüm form elemanlarını gizle
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.add('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.querySelector('.step-indicator').classList.add('hidden');
+        document.querySelector('.subtitle').classList.add('hidden');
+        document.querySelector('h1').classList.add('hidden');
+        
+        // Trip mesajını göster
+        document.getElementById('tripPersonName').textContent = decodedPerson;
+        document.getElementById('tripReasonText').textContent = decodedReason;
+        document.getElementById('tripMessage').classList.remove('hidden');
+        
+        // Sayfa başlığını güncelle
+        document.title = `${decodedPerson} sana trip atıyor!`;
+        
+        return true;
+      }
+      
+      return false;
+    }
+
+    // Sayfa yüklendiğinde kontrol et
+    window.addEventListener('load', function() {
+      // Önce trip mesajı var mı kontrol et
+      if (!checkTripMessage()) {
+        // Trip mesajı yoksa normal formu göster
+        document.getElementById('person').focus();
+      }
+    });
+  </script>
+</body>
+</html>
